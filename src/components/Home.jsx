@@ -1,6 +1,56 @@
-import { Fragment } from "react";
+import { Fragment, useState } from "react";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { BellIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { ShoppingBagIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+
+import Product from "./Product";
+
+import {
+  AnnotationIcon,
+  GlobeAltIcon,
+  LightningBoltIcon,
+  ScaleIcon,
+} from "@heroicons/react/outline";
+import Aside from "./Aside";
+import ShoppingCart from "./ShoppingCart";
+
+const features = [
+  {
+    name: "Beef stew with 2 chapatis",
+    description:
+      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+    icon: GlobeAltIcon,
+    active: false,
+    price: 150,
+    photo_url: require("../images/chapati.jpg"),
+  },
+  {
+    name: "Beans stew with 2 chapatis",
+    description:
+      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+    icon: ScaleIcon,
+    active: false,
+    price: 120,
+    photo_url: require("../images/chapo-beans.jpg"),
+  },
+  {
+    name: "Fried nyama with ugali",
+    description:
+      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+    icon: LightningBoltIcon,
+    active: false,
+    price: 120,
+    photo_url: require("../images/ugali-nyama.jpeg"),
+  },
+  {
+    name: "1/4 fried chicken with rice",
+    description:
+      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
+    icon: AnnotationIcon,
+    active: false,
+    price: 180,
+    photo_url: require("../images/chicken-rice.jpg"),
+  },
+];
 
 const user = {
   name: "Tom Cook",
@@ -9,11 +59,9 @@ const user = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Dashboard", href: "#", current: true },
-  { name: "Team", href: "#", current: false },
-  { name: "Projects", href: "#", current: false },
-  { name: "Calendar", href: "#", current: false },
-  { name: "Reports", href: "#", current: false },
+  { name: "Home", href: "#", current: true },
+  { name: "Shop All", href: "#", current: false },
+  { name: "About Us", href: "#", current: false },
 ];
 const userNavigation = [
   { name: "Your Profile", href: "#" },
@@ -25,7 +73,23 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function Example() {
+export default function Home() {
+  const [products, setProducts] = useState(features);
+  const [open, setOpen] = useState(false);
+  const [openCart, setOpenCart] = useState(false);
+  function handleCartBtn(name) {
+    console.log("check")
+    setProducts((products) =>
+      products.map((feature) => {
+        if (feature.name === name) {
+          return { ...feature, active: !feature.active };
+        } else {
+          return feature;
+        }
+      })
+    );
+  }
+
   return (
     <>
       {/*
@@ -37,30 +101,32 @@ export default function Example() {
         ```
       */}
       <div className="min-h-full">
-        <Disclosure as="nav" className="bg-gray-800">
+        <Disclosure as="nav" className="bg-white">
           {({ open }) => (
             <>
               <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex items-center justify-between h-16">
+                <div className="flex items-center justify-around h-24">
                   <div className="flex items-center">
                     <div className="flex-shrink-0">
-                      <img
-                        className="h-8 w-8"
-                        src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-                        alt="Workflow"
-                      />
+                      <div className="border-3 shadow border mt-1 border-red-500" />
+                      <h2 className="flex items-center text-lg text-red-500 font-semibold tracking-wide uppercase">
+                        <span className="text-5xl">M</span>
+                        <span>athe</span>
+                        <span className="text-4xl">F</span>ood
+                      </h2>
+                      <div className="border-3 shadow border mt-1 border-red-500" />
                     </div>
                     <div className="hidden md:block">
-                      <div className="ml-10 flex items-baseline space-x-4">
+                      <div className="ml-10 flex items-center space-x-6">
                         {navigation.map((item) => (
                           <a
                             key={item.name}
                             href={item.href}
                             className={classNames(
                               item.current
-                                ? "bg-gray-900 text-white"
-                                : "text-gray-300 hover:bg-gray-700 hover:text-white",
-                              "px-3 py-2 rounded-md text-sm font-medium"
+                                ? "underline text-red-400"
+                                : "text-red-600 hover:underline hover:text-red-400",
+                              "px-3 py-2 text-lg font-medium"
                             )}
                             aria-current={item.current ? "page" : undefined}
                           >
@@ -72,14 +138,6 @@ export default function Example() {
                   </div>
                   <div className="hidden md:block">
                     <div className="ml-4 flex items-center md:ml-6">
-                      <button
-                        type="button"
-                        className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
-                      >
-                        <span className="sr-only">View notifications</span>
-                        <BellIcon className="h-6 w-6" aria-hidden="true" />
-                      </button>
-
                       {/* Profile dropdown */}
                       <Menu as="div" className="ml-3 relative">
                         <div>
@@ -120,6 +178,23 @@ export default function Example() {
                           </Menu.Items>
                         </Transition>
                       </Menu>
+                      <button
+                        onClick={() => setOpenCart(true)}
+                        type="button"
+                        className="p-1 rounded-full text-red-500 hover:text-red-600 focus:outline-none"
+                      >
+                        <span className="sr-only">View Cart</span>
+                        <ShoppingBagIcon
+                          className="h-8 w-8"
+                          aria-hidden="true"
+                        />
+                      </button>
+                      <button
+                        onClick={() => setOpenCart(true)}
+                        class="flex items-center px-1 py-1 text-red-500 text-sm outline outline-red-500 rounded-full hover:outline-4"
+                      >
+                        <span>Ksh. 250.00</span>
+                      </button>
                     </div>
                   </div>
                   <div className="-mr-2 flex md:hidden">
@@ -176,11 +251,12 @@ export default function Example() {
                       </div>
                     </div>
                     <button
+                      onClick={() => setOpen(true)}
                       type="button"
                       className="ml-auto bg-gray-800 flex-shrink-0 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                     >
-                      <span className="sr-only">View notifications</span>
-                      <BellIcon className="h-6 w-6" aria-hidden="true" />
+                      <span className="sr-only">View Cart</span>
+                      <ShoppingBagIcon className="h-8 w-8" aria-hidden="true" />
                     </button>
                   </div>
                   <div className="mt-3 px-2 space-y-1">
@@ -201,21 +277,24 @@ export default function Example() {
           )}
         </Disclosure>
 
-        <header className="bg-white shadow">
+        {/* <header className="bg-white shadow">
           <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
             <h1 className="text-3xl font-bold text-gray-900">Dashboard</h1>
           </div>
-        </header>
+        </header> */}
         <main>
           <div className="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
             {/* Replace with your content */}
-            <div className="px-4 py-6 sm:px-0">
+            {/* <div className="px-4 py-6 sm:px-0">
               <div className="border-4 border-dashed border-gray-200 rounded-lg h-96" />
-            </div>
+            </div> */}
+            <Product features={products} onHover={handleCartBtn} />
             {/* /End replace */}
           </div>
         </main>
       </div>
+      <Aside open={open} setOpen={setOpen} />
+      <ShoppingCart openCart={openCart} setOpenCart={setOpenCart} />
     </>
   );
 }
