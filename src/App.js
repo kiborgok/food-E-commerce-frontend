@@ -82,8 +82,16 @@ function App() {
   const [cartItems, setCartItems] = useState(items);
 
   function handleCartAdd(cartItem) {
-    setCartItems([...cartItems,
-      { ...cartItem, quantity: 1, imageAlt: cartItem.name },
+    setCartItems([
+      ...cartItems,
+      {
+        id: cartItem.id,
+        name: cartItem.name,
+        price: cartItem.price,
+        quantity: 1,
+        imageSrc: cartItem.imageSrc,
+        imageAlt: cartItem.name,
+      },
     ]);
   }
 
@@ -94,7 +102,7 @@ function App() {
   function handleTotalPriceChange(cartItems) {
     setTotalPrice(
       cartItems
-        .map((item) => item.price)
+        .map((item) => item.price * item.quantity)
         .reduce((initialValue, currentValue) => initialValue + currentValue, 0)
     );
   }
@@ -124,6 +132,27 @@ function App() {
       })
     );
   }
+  function handleIncrement(cartProduct) {
+    setCartItems(
+      cartItems.map((product) =>
+        product.id === cartProduct.id
+          ? {
+              ...product,
+              quantity: product.quantity + 1,
+            }
+          : product
+      )
+    );
+  }
+  function handleDecrement(cartProduct) {
+    setCartItems(
+      cartItems.map((product) =>
+        product.id === cartProduct.id
+          ? { ...product, quantity: product.quantity - 1 }
+          : product
+      )
+    );
+  }
   return (
     <>
       <NavBar
@@ -138,6 +167,8 @@ function App() {
         onCartToggle={setToggle}
         totalPrice={totalPrice}
         onRemoveFromCart={handleCartRemove}
+        onIncrement={handleIncrement}
+        onDecrement={handleDecrement}
       />
       <Home
         products={products}

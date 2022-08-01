@@ -9,6 +9,8 @@ export default function ShoppingCart({
   onCartToggle,
   totalPrice,
   onRemoveFromCart,
+  onDecrement,
+  onIncrement,
 }) {
   return (
     <Transition.Root show={cart} as={Fragment}>
@@ -81,7 +83,8 @@ export default function ShoppingCart({
                                           </a>
                                         </h3>
                                         <p className="ml-4">
-                                          Ksh. {product.price}.00
+                                          Ksh.{" "}
+                                          {product.price * product.quantity}.00
                                         </p>
                                       </div>
                                       <p className="mt-1 text-sm text-gray-500">
@@ -90,11 +93,22 @@ export default function ShoppingCart({
                                     </div>
                                     <div className="flex flex-1 items-end justify-between text-sm">
                                       <p className="text-gray-500">
-                                        <span className="bg-yellow-300 p-2 m-2 rounded-full">
+                                        <button
+                                          onClick={() => onDecrement(product)}
+                                          className={
+                                            product.quantity === 1
+                                              ? "bg-gray-300 p-2 m-2 rounded-full cursor-pointer"
+                                              : "bg-yellow-300 p-2 m-2 rounded-full cursor-pointer"
+                                          }
+                                          disabled={product.quantity === 1}
+                                        >
                                           -
-                                        </span>{" "}
+                                        </button>{" "}
                                         {product.quantity}
-                                        <span className="bg-yellow-300 p-2 m-2 rounded-full">
+                                        <span
+                                          onClick={() => onIncrement(product)}
+                                          className="bg-yellow-300 p-2 m-2 rounded-full cursor-pointer"
+                                        >
                                           +
                                         </span>
                                       </p>
