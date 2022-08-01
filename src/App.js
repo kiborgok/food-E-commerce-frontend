@@ -20,7 +20,7 @@ const features = [
     icon: GlobeAltIcon,
     active: false,
     price: 150,
-    photoSrc: require("./images/chapati.jpg"),
+    imageSrc: require("./images/chapati.jpg"),
   },
   {
     id: 2,
@@ -30,7 +30,7 @@ const features = [
     icon: ScaleIcon,
     active: false,
     price: 120,
-    photoSrc: require("./images/chapo-beans.jpg"),
+    imageSrc: require("./images/chapo-beans.jpg"),
   },
   {
     id: 3,
@@ -40,7 +40,7 @@ const features = [
     icon: LightningBoltIcon,
     active: false,
     price: 120,
-    photoSrc: require("./images/ugali-nyama.jpeg"),
+    imageSrc: require("./images/ugali-nyama.jpeg"),
   },
   {
     id: 4,
@@ -50,7 +50,7 @@ const features = [
     icon: AnnotationIcon,
     active: false,
     price: 180,
-    photoSrc: require("./images/chicken-rice.jpg"),
+    imageSrc: require("./images/chicken-rice.jpg"),
   },
 ];
 const items = [
@@ -82,15 +82,23 @@ function App() {
   const [cart, setToggle] = useState(false);
   const [cartItems, setCartItems] = useState(items);
 
-  function handleTotalPriceChange() {
+  function handleCartAdd(cartItem) {
+    const newCartItems = [...cartItems];
+    setCartItems([
+      ...newCartItems,
+      { ...cartItem, quantity: 1, imageAlt: cartItem.name },
+    ]);
+  }
+
+  function handleTotalPriceChange(cartItems) {
     setTotalPrice(
-      items
+      cartItems
         .map((item) => item.price)
         .reduce((initialValue, currentValue) => initialValue + currentValue, 0)
     );
   }
 
-  useEffect(() => handleTotalPriceChange(), [totalPrice]);
+  useEffect(() => handleTotalPriceChange(cartItems), [cartItems]);
 
   function handleProductHover(name) {
     setProducts((products) =>
@@ -106,7 +114,7 @@ function App() {
   return (
     <>
       <NavBar
-        items={items}
+        items={cartItems}
         onCartToggle={setToggle}
         totalPrice={totalPrice}
         onPriceChange={handleTotalPriceChange}
@@ -117,7 +125,11 @@ function App() {
         onCartToggle={setToggle}
         totalPrice={totalPrice}
       />
-      <Home products={products} onProductHover={handleProductHover} />
+      <Home
+        products={products}
+        onProductHover={handleProductHover}
+        onAddToCart={handleCartAdd}
+      />
     </>
   );
 }
