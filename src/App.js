@@ -72,7 +72,6 @@ const items = [
     imageAlt:
       "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
   },
-
   // More products...
 ];
 
@@ -83,11 +82,13 @@ function App() {
   const [cartItems, setCartItems] = useState(items);
 
   function handleCartAdd(cartItem) {
-    const newCartItems = [...cartItems];
-    setCartItems([
-      ...newCartItems,
+    setCartItems([...cartItems,
       { ...cartItem, quantity: 1, imageAlt: cartItem.name },
     ]);
+  }
+
+  function handleCartRemove(cartItem) {
+    setCartItems(cartItems.filter((item) => item.id !== cartItem.id));
   }
 
   function handleTotalPriceChange(cartItems) {
@@ -100,13 +101,25 @@ function App() {
 
   useEffect(() => handleTotalPriceChange(cartItems), [cartItems]);
 
-  function handleProductHover(name) {
+  function handleMouseOut(id) {
     setProducts((products) =>
-      products.map((feature) => {
-        if (feature.name === name) {
-          return { ...feature, active: !feature.active };
+      products.map((product) => {
+        if (product.id === id) {
+          return { ...product, active: !product.active };
         } else {
-          return feature;
+          return product;
+        }
+      })
+    );
+  }
+
+  function handleMouseIn(id) {
+    setProducts((products) =>
+      products.map((product) => {
+        if (product.id === id) {
+          return { ...product, active: !product.active };
+        } else {
+          return product;
         }
       })
     );
@@ -124,11 +137,15 @@ function App() {
         cart={cart}
         onCartToggle={setToggle}
         totalPrice={totalPrice}
+        onRemoveFromCart={handleCartRemove}
       />
       <Home
         products={products}
-        onProductHover={handleProductHover}
+        onMouseOut={handleMouseOut}
+        onMouseIn={handleMouseIn}
         onAddToCart={handleCartAdd}
+        cartItems={cartItems}
+        onRemoveFromCart={handleCartRemove}
       />
     </>
   );
