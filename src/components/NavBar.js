@@ -1,6 +1,7 @@
 import { Fragment } from "react";
+import { NavLink } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { ShoppingBagIcon, MenuIcon, XIcon } from "@heroicons/react/outline";
+import { ShoppingBagIcon, MenuIcon, XIcon, UserIcon } from "@heroicons/react/outline";
 
 const user = {
   name: "Tom Cook",
@@ -9,14 +10,13 @@ const user = {
     "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80",
 };
 const navigation = [
-  { name: "Home", href: "#", current: true },
-  { name: "Shop All", href: "#", current: false },
-  { name: "About Us", href: "#", current: false },
+  { name: "Home", to: "/", current: true },
+  { name: "Shop All", to: "/signup", current: true },
+  { name: "About Us", to: "#", current: false },
 ];
 const userNavigation = [
-  { name: "Your Profile", href: "#" },
-  { name: "Settings", href: "#" },
-  { name: "Sign out", href: "#" },
+  { name: "Signin", to: "/signin" },
+  { name: "Signup", to: "/signup" },
 ];
 
 function classNames(...classes) {
@@ -32,30 +32,34 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
             <div className="flex items-center justify-around h-20">
               <div className="flex items-center">
                 <div className="flex-shrink-0">
-                  <div className="border-3 shadow border mt-1 border-red-500" />
+                  <div className="border-3 shadow border border-red-500" />
                   <h2 className="flex items-center text-lg text-red-500 font-semibold tracking-wide uppercase">
                     <span className="text-5xl">M</span>
                     <span>athe</span>
                     <span className="text-4xl">F</span>ood
                   </h2>
-                  <div className="border-3 shadow border mt-1 border-red-500" />
+                  <div className="border-3 shadow border border-red-500" />
                 </div>
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-center space-x-6">
                     {navigation.map((item) => (
-                      <a
+                      <NavLink
                         key={item.name}
-                        href={item.href}
-                        className={classNames(
-                          item.current
-                            ? "underline text-red-400"
-                            : "text-red-600 hover:underline hover:text-red-400",
-                          "px-3 py-2 text-lg font-medium"
-                        )}
-                        aria-current={item.current ? "page" : undefined}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          classNames(
+                            isActive
+                              ? "underline text-red-400"
+                              : "text-red-600 hover:underline hover:text-red-400",
+                            "px-3 py-2 text-lg font-medium"
+                          )
+                        }
+                        aria-current={({ isActive }) =>
+                          isActive ? "page" : undefined
+                        }
                       >
                         {item.name}
-                      </a>
+                      </NavLink>
                     ))}
                   </div>
                 </div>
@@ -65,13 +69,9 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                   {/* Profile dropdown */}
                   <Menu as="div" className="ml-3 relative">
                     <div>
-                      <Menu.Button className="max-w-xs bg-gray-800 rounded-full flex items-center text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
+                      <Menu.Button className="max-w-xs rounded-full flex items-center text-sm">
                         <span className="sr-only">Open user menu</span>
-                        <img
-                          className="h-8 w-8 rounded-full"
-                          src={user.imageUrl}
-                          alt=""
-                        />
+                        <UserIcon className="h-8 w-8" alt="" />
                       </Menu.Button>
                     </div>
                     <Transition
@@ -87,15 +87,15 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                         {userNavigation.map((item) => (
                           <Menu.Item key={item.name}>
                             {({ active }) => (
-                              <a
-                                href={item.href}
+                              <NavLink
+                                to={item.to}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
-                                  "block px-4 py-2 text-sm text-gray-700"
+                                  "block px-4 py-2 text-sm text-red-600"
                                 )}
                               >
                                 {item.name}
-                              </a>
+                              </NavLink>
                             )}
                           </Menu.Item>
                         ))}
@@ -115,12 +115,17 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                   </button>
                   <button
                     onClick={() => onCartToggle(true)}
-                    class="flex items-center px-1 py-1 text-red-500 text-sm outline outline-red-500 rounded-full hover:outline-4"
+                    class="flex items-center px-1 py-1 text-gray-700 text-sm outline outline-red-500 rounded-full hover:outline-4"
                   >
                     <span>Ksh. {totalPrice}.00</span>
                   </button>
                 </div>
               </div>
+              <button
+                class="flex items-center px-1 py-1 text-gay-700 text-sm outline outline-gay-700 rounded-md hover:outline-4"
+              >
+                <NavLink to="signin">Signin/Signup</NavLink>
+              </button>
               <div className="-mr-2 flex md:hidden">
                 {/* Mobile menu button */}
                 <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
@@ -140,8 +145,8 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
               {navigation.map((item) => (
                 <Disclosure.Button
                   key={item.name}
-                  as="a"
-                  href={item.href}
+                  as={NavLink}
+                  to={item.to}
                   className={classNames(
                     item.current
                       ? "bg-gray-900 text-white"
@@ -157,11 +162,7 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
             <div className="pt-4 pb-3 border-t border-gray-700">
               <div className="flex items-center px-5">
                 <div className="flex-shrink-0">
-                  <img
-                    className="h-10 w-10 rounded-full"
-                    src={user.imageUrl}
-                    alt=""
-                  />
+                  <UserIcon className="h-10 w-10 rounded-full" alt="" />
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
@@ -184,8 +185,8 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                 {userNavigation.map((item) => (
                   <Disclosure.Button
                     key={item.name}
-                    as="a"
-                    href={item.href}
+                    as="NavLink"
+                    to={item.to}
                     className="block px-3 py-2 rounded-md text-base font-medium text-gray-400 hover:text-white hover:bg-gray-700"
                   >
                     {item.name}
