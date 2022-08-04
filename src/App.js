@@ -1,8 +1,13 @@
 import "./App.css";
+import React, { useEffect, useState } from "react";
+import { Routes, Route } from "react-router-dom";
+
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
-import React, { useEffect, useState } from "react";
 import ShoppingCart from "./components/ShoppingCart";
+
+import { useToken } from "./hooks/useToken";
+import jwt from "jwt-decode";
 
 import {
   AnnotationIcon,
@@ -10,6 +15,11 @@ import {
   LightningBoltIcon,
   ScaleIcon,
 } from "@heroicons/react/outline";
+import Signup from "./components/Signup";
+import Main from "./components/Main";
+import Signin from "./components/Signin";
+import Checkout from "./components/Checkout";
+import { loadUser } from "./api/auth";
 
 const features = [
   {
@@ -80,6 +90,41 @@ function App() {
   const [totalPrice, setTotalPrice] = useState(0);
   const [cart, setToggle] = useState(false);
   const [cartItems, setCartItems] = useState(items);
+  const [order, setOrder] = useState({
+    name: "",
+    email: "",
+    location: "",
+    phone: "",
+    paymentMethod: "Lipa na M-PESA",
+    amount: totalPrice,
+  });
+
+  const [token] = useToken();
+
+  const getUser = (token) => {
+    return jwt(token);
+  };
+
+  const [user, setUser] = useState(() => {
+    if (!token) return null;
+    return getUser(token);
+  });
+
+  useEffect(() => {
+    if (!token) {
+      setUser(null);
+    } else {
+      setUser(getUser(token));
+    }
+  }, [token]);
+
+  useEffect(() => {
+    loadUser(token).then((r) => {
+      if (r.ok) {
+        r.json().then((user) => setUser(user));
+      }
+    });
+  }, [token]);
 
   function handleCartAdd(cartItem) {
     setCartItems([
@@ -153,9 +198,18 @@ function App() {
       )
     );
   }
+
+  function handleInfoChange(e) {
+    const { name, value } = e.target;
+    setOrder({
+      ...order,
+      [name]: value,
+    });
+  }
   return (
     <>
       <NavBar
+        user={user}
         items={cartItems}
         onCartToggle={setToggle}
         totalPrice={totalPrice}
@@ -170,14 +224,47 @@ function App() {
         onIncrement={handleIncrement}
         onDecrement={handleDecrement}
       />
-      <Home
-        products={products}
-        onMouseOut={handleMouseOut}
-        onMouseIn={handleMouseIn}
-        onAddToCart={handleCartAdd}
-        cartItems={cartItems}
-        onRemoveFromCart={handleCartRemove}
-      />
+      <Main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                products={products}
+                onMouseOut={handleMouseOut}
+                onMouseIn={handleMouseIn}
+                onAddToCart={handleCartAdd}
+                cartItems={cartItems}
+                onRemoveFromCart={handleCartRemove}
+              />
+            }
+          />
+          <Route
+            path="/signin"
+            element={<Signin user={user} getUser={getUser} setUser={setUser} />}
+          />
+          <Route
+            path="/signup"
+            element={<Signup user={user} getUser={getUser} setUser={setUser} />}
+          />
+          <Route
+            path="/checkout"
+            element={
+              <Checkout
+                order={order}
+                handleInfoChange={handleInfoChange}
+                cartItems={cartItems}
+                cart={cart}
+                onCartToggle={setToggle}
+                totalPrice={totalPrice}
+                onRemoveFromCart={handleCartRemove}
+                onIncrement={handleIncrement}
+                onDecrement={handleDecrement}
+              />
+            }
+          />
+        </Routes>
+      </Main>
     </>
   );
 }

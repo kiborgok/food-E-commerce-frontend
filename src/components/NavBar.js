@@ -1,9 +1,14 @@
 import { Fragment } from "react";
 import { NavLink } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
-import { ShoppingBagIcon, MenuIcon, XIcon, UserIcon } from "@heroicons/react/outline";
+import {
+  ShoppingBagIcon,
+  MenuIcon,
+  XIcon,
+  UserIcon,
+} from "@heroicons/react/outline";
 
-const user = {
+const user1 = {
   name: "Tom Cook",
   email: "tom@example.com",
   imageUrl:
@@ -14,16 +19,22 @@ const navigation = [
   { name: "Shop All", to: "/signup", current: true },
   { name: "About Us", to: "#", current: false },
 ];
-const userNavigation = [
-  { name: "Signin", to: "/signin" },
-  { name: "Signup", to: "/signup" },
-];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function NavBar({ items, onCartToggle, totalPrice }) {
+export default function NavBar({ user, items, onCartToggle, totalPrice }) {
+  let userNavigation = [
+    { name: "Signin", to: "/signin" },
+    { name: "Signup", to: "/signup" },
+  ];
+  if (user) {
+    userNavigation = [
+      { name: "Account", to: "/signin" },
+      { name: "LogOut", to: "/signup" },
+    ];
+  }
   return (
     <Disclosure as="nav" className="bg-white">
       {({ open }) => (
@@ -121,11 +132,11 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                   </button>
                 </div>
               </div>
-              <button
-                class="flex items-center px-1 py-1 text-gay-700 text-sm outline outline-gay-700 rounded-md hover:outline-4"
-              >
-                <NavLink to="signin">Signin/Signup</NavLink>
-              </button>
+              {user ? null : (
+                <button class="flex items-center px-1 py-1 text-gay-700 text-sm outline outline-gay-700 rounded-md hover:outline-4">
+                  <NavLink to="signin">Signin/Signup</NavLink>
+                </button>
+              )}
               <div className="-mr-2 flex md:hidden">
                 {/* Mobile menu button */}
                 <Disclosure.Button className="bg-gray-800 inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">
@@ -166,10 +177,10 @@ export default function NavBar({ items, onCartToggle, totalPrice }) {
                 </div>
                 <div className="ml-3">
                   <div className="text-base font-medium leading-none text-white">
-                    {user.name}
+                    {user1.name}
                   </div>
                   <div className="text-sm font-medium leading-none text-gray-400">
-                    {user.email}
+                    {user1.email}
                   </div>
                 </div>
                 <button
