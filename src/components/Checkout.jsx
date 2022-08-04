@@ -26,18 +26,15 @@ export default function Checkout({
         //   }
         // );
         // const data = await response.json();
-
-        const accessToken = "LJCnRhRDPeRAni80N2QCvPNzlnHz";
-          console.log(accessToken);
+        let headers = new Headers();
+        headers.append("Content-Type", "application/json");
+        headers.append("Authorization", "Bearer GCBZwWGW5etWaXa8n4ygfHox3dRa");
+          console.log(headers);
         const result = await fetch(
           "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
           {
             method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${accessToken}`,
-              mode: "no-cors"
-            },
+            headers: headers,
             body: JSON.stringify({
               BusinessShortCode: 174379,
               Password:
