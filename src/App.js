@@ -9,95 +9,37 @@ import ShoppingCart from "./components/ShoppingCart";
 import { useToken } from "./hooks/useToken";
 import jwt from "jwt-decode";
 
-import {
-  AnnotationIcon,
-  GlobeAltIcon,
-  LightningBoltIcon,
-  ScaleIcon,
-} from "@heroicons/react/outline";
 import Signup from "./components/Signup";
 import Main from "./components/Main";
 import Signin from "./components/Signin";
 import Checkout from "./components/Checkout";
 import { loadUser } from "./api/auth";
-
-const features = [
-  {
-    id: 1,
-    name: "Beef stew with 2 chapatis",
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
-    icon: GlobeAltIcon,
-    active: false,
-    price: 150,
-    imageSrc: require("./images/chapati.jpg"),
-  },
-  {
-    id: 2,
-    name: "Beans stew with 2 chapatis",
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
-    icon: ScaleIcon,
-    active: false,
-    price: 120,
-    imageSrc: require("./images/chapo-beans.jpg"),
-  },
-  {
-    id: 3,
-    name: "Fried nyama with ugali",
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
-    icon: LightningBoltIcon,
-    active: false,
-    price: 120,
-    imageSrc: require("./images/ugali-nyama.jpeg"),
-  },
-  {
-    id: 4,
-    name: "1/4 fried chicken with rice",
-    description:
-      "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Maiores impedit perferendis suscipit eaque, iste dolor cupiditate blanditiis ratione.",
-    icon: AnnotationIcon,
-    active: false,
-    price: 180,
-    imageSrc: require("./images/chicken-rice.jpg"),
-  },
-];
-const items = [
-  {
-    id: 1,
-    name: "Beans stew with 2 chapatis",
-    price: 90,
-    quantity: 1,
-    imageSrc: require("./images/chapo-beans.jpg"),
-    imageAlt:
-      "Salmon orange fabric pouch with match zipper, gray zipper pull, and adjustable hip belt.",
-  },
-  {
-    id: 2,
-    name: "Fried nyama with ugali",
-    price: 32,
-    quantity: 1,
-    imageSrc: require("./images/ugali-nyama.jpeg"),
-    imageAlt:
-      "Front of satchel with blue canvas body, black straps and handle, drawstring top, and front zipper pouch.",
-  },
-  // More products...
-];
+import Order from "./components/Order";
+import Admin from "./components/admin/Admin";
+import { getProducts } from "./api/product";
 
 function App() {
-  const [products, setProducts] = useState(features);
+  const [products, setProducts] = useState([]);
   const [totalPrice, setTotalPrice] = useState(0);
   const [cart, setToggle] = useState(false);
-  const [cartItems, setCartItems] = useState(items);
+  const [cartItems, setCartItems] = useState([]);
   const [order, setOrder] = useState({
     name: "",
     email: "",
     location: "",
     phone: "",
-    paymentMethod: "Lipa na M-PESA",
     amount: totalPrice,
   });
+
+  async function fetchProducts() {
+    let data = await getProducts();
+    data = data.map(product => ({...product, active: false}))
+    setProducts([...products, ...data]);
+  }
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   const [token] = useToken();
 
@@ -209,6 +151,7 @@ function App() {
   return (
     <>
       <NavBar
+        setUser={setUser}
         user={user}
         items={cartItems}
         onCartToggle={setToggle}
@@ -216,6 +159,7 @@ function App() {
         onPriceChange={handleTotalPriceChange}
       />
       <ShoppingCart
+        user={user}
         cartItems={cartItems}
         cart={cart}
         onCartToggle={setToggle}
@@ -226,6 +170,10 @@ function App() {
       />
       <Main>
         <Routes>
+          <Route
+            path="/admin/*"
+            element={<Admin products={products} setProducts={setProducts} />}
+          />
           <Route
             path="/"
             element={
@@ -251,6 +199,7 @@ function App() {
             path="/checkout"
             element={
               <Checkout
+                user={user}
                 order={order}
                 handleInfoChange={handleInfoChange}
                 cartItems={cartItems}
@@ -260,6 +209,24 @@ function App() {
                 onRemoveFromCart={handleCartRemove}
                 onIncrement={handleIncrement}
                 onDecrement={handleDecrement}
+              />
+            }
+          />
+          <Route
+            path="/order"
+            element={
+              <Order
+                user={user}
+                order={order}
+                handleInfoChange={handleInfoChange}
+                cartItems={cartItems}
+                cart={cart}
+                onCartToggle={setToggle}
+                totalPrice={totalPrice}
+                onRemoveFromCart={handleCartRemove}
+                onIncrement={handleIncrement}
+                onDecrement={handleDecrement}
+                setCartItems={setCartItems}
               />
             }
           />

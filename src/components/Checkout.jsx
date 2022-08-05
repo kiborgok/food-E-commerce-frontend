@@ -1,7 +1,8 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function Checkout({
+  user,
   cartItems,
   cart,
   onCartToggle,
@@ -12,61 +13,28 @@ export default function Checkout({
   handleInfoChange,
   order,
 }) {
-  async function payMpesa() {
-    try {
-        // const response = await fetch(
-        //   "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials",
-        //   {
-        //     method: "GET",
-        //     headers: {
-        //       Authorization:
-        //         "Bearer bEdLWnJiUTBxQ2I4V0FCR0hDeUVGU0t6aWs4eDZSNGo6TkpEYkZmOW5wQ29MbnlMUw==",
-        //       mode: 'no-cors'
-        //     },
-        //   }
-        // );
-        // const data = await response.json();
-        let headers = new Headers();
-        headers.append("Content-Type", "application/json");
-        headers.append("Authorization", "Bearer GCBZwWGW5etWaXa8n4ygfHox3dRa");
-          console.log(headers);
-        const result = await fetch(
-          "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest",
-          {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({
-              BusinessShortCode: 174379,
-              Password:
-                "MTc0Mzc5YmZiMjc5ZjlhYTliZGJjZjE1OGU5N2RkNzFhNDY3Y2QyZTBjODkzMDU5YjEwZjc4ZTZiNzJhZGExZWQyYzkxOTIwMjIwODA0MTEyMjIw",
-              Timestamp: "20220804112220",
-              TransactionType: "CustomerPayBillOnline",
-              Amount: 1,
-              PartyA: 254708374149,
-              PartyB: 174379,
-              PhoneNumber: 254706941217,
-              CallBackURL: "https://mydomain.com/path",
-              AccountReference: "CompanyXLTD",
-              TransactionDesc: "Payment of X",
-            }),
-          }
-        );
-      const reqData = await result.json();
-      console.log(reqData);
-    } catch (error) {
-      const err = await error.json();
-      console.log(err);
+  const navigate = useNavigate();
+  if(cartItems.length === 0) return navigate("/");
+  function handleOrder() {
+    if (user) {
+      if (order.name === "" || order.email === "" || order.location === "" || order.phone === "") {
+        return alert("Please fill in all fields")
+      }
+      if (order.phone.length > 10 || order.phone.length < 10) {
+        return alert("Invalid phone number: "+ order.phone)
+      }
+        return navigate("/order");
+    } else {
+      return navigate("/signin");
     }
-        
   }
-
   return (
     <div className="flex justify-between">
       <div class="leading-loose">
         <form class="max-w-xl m-4 p-10 bg-white rounded shadow-xl">
           <p class="text-gray-800 font-medium">Customer information</p>
           <div class="">
-            <label class="block text-sm text-gray-00" for="name">
+            <label class="block text-sm text-gray-0" for="name">
               Full name
             </label>
             <input
@@ -82,7 +50,7 @@ export default function Checkout({
             />
           </div>
           <div class="mt-2">
-            <label class="block text-sm text-gray-600" for="email">
+            <label class="block text-sm text-gray-0" for="email">
               Email
             </label>
             <input
@@ -98,7 +66,7 @@ export default function Checkout({
             />
           </div>
           <div class="mt-2">
-            <label class=" block text-sm text-gray-600" for="cus_email">
+            <label class=" block text-sm text-gray-0" for="cus_email">
               Address
             </label>
             <input
@@ -113,11 +81,7 @@ export default function Checkout({
               onChange={handleInfoChange}
             />
           </div>
-          <p class="mt-4 text-gray-800 font-medium">Payment information</p>
-          <div class="my-2">
-            <label class="block my-2 text-md text-red-600" for="name">
-              Lipa na M-PESA
-            </label>
+          <div className="mt-2">
             <input
               class="w-full px-2 py-2 text-gray-700 bg-white rounded"
               id="phone"
@@ -240,14 +204,10 @@ export default function Checkout({
                 <p>Subtotal</p>
                 <p>Ksh. {totalPrice + 30}.00</p>
               </div>
-              <div className="mt-6">
-                <NavLink
-                  onClick={() => payMpesa()}
-                  to="/checkout"
-                  className="flex items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
-                >
+              <div className="mt-6" onClick={() => handleOrder()}>
+                <button className="flex items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700">
                   Confirm Order
-                </NavLink>
+                </button>
               </div>
               <div className="mt-6 flex justify-center text-center text-sm text-gray-500">
                 <p>

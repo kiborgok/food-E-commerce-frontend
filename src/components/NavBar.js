@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { NavLink } from "react-router-dom";
+import {  NavLink } from "react-router-dom";
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import {
   ShoppingBagIcon,
@@ -16,23 +16,21 @@ const user1 = {
 };
 const navigation = [
   { name: "Home", to: "/", current: true },
-  { name: "Shop All", to: "/signup", current: true },
-  { name: "About Us", to: "#", current: false },
+  { name: "Admin", to: "/admin", current: false },
 ];
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(" ");
 }
 
-export default function NavBar({ user, items, onCartToggle, totalPrice }) {
+export default function NavBar({ user,setUser, items, onCartToggle, totalPrice }) {
   let userNavigation = [
     { name: "Signin", to: "/signin" },
     { name: "Signup", to: "/signup" },
   ];
   if (user) {
     userNavigation = [
-      { name: "Account", to: "/signin" },
-      { name: "LogOut", to: "/signup" },
+      { name: "LogOut", to: "/" },
     ];
   }
   return (
@@ -54,7 +52,7 @@ export default function NavBar({ user, items, onCartToggle, totalPrice }) {
                 <div className="hidden md:block">
                   <div className="ml-10 flex items-center space-x-6">
                     {navigation.map((item) => (
-                      <NavLink
+                      !user && item.name === "Admin" ? null : <NavLink
                         key={item.name}
                         to={item.to}
                         className={({ isActive }) =>
@@ -99,6 +97,10 @@ export default function NavBar({ user, items, onCartToggle, totalPrice }) {
                           <Menu.Item key={item.name}>
                             {({ active }) => (
                               <NavLink
+                                onClick={() => {
+                                  localStorage.removeItem("token")
+                                  setUser(null)
+                                }}
                                 to={item.to}
                                 className={classNames(
                                   active ? "bg-gray-100" : "",
