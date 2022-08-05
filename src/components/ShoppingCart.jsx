@@ -2,9 +2,10 @@
 import { Fragment } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 import { XIcon } from "@heroicons/react/outline";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 
 export default function ShoppingCart({
+  user,
   cartItems,
   cart,
   onCartToggle,
@@ -13,6 +14,7 @@ export default function ShoppingCart({
   onDecrement,
   onIncrement,
 }) {
+  const navigate = useNavigate();
   return (
     <Transition.Root show={cart} as={Fragment}>
       <Dialog as="div" className="relative z-10" onClose={onCartToggle}>
@@ -153,7 +155,10 @@ export default function ShoppingCart({
                           <h2 className="my-3">Your Cart is empty!</h2>
                           <button
                             class="flex items-center px-20 py-2 text-red-500 my-3 text-lg outline outline-red-500 rounded-full hover:outline-4"
-                            // onClick={() => onAddToCart(product)}
+                              onClick={() => {
+                                onCartToggle(!cart)
+                                navigate("/")
+                              }}
                           >
                             <span>Go Shopping</span>
                           </button>
@@ -173,7 +178,7 @@ export default function ShoppingCart({
                         <div className="mt-6">
                           <NavLink
                             onClick={() => onCartToggle(!cart)}
-                            to="/checkout"
+                            to={user ? "/checkout" : "/signin"}
                             className="flex items-center justify-center rounded-md border border-transparent bg-red-600 px-6 py-3 text-base font-medium text-white shadow-sm hover:bg-red-700"
                           >
                             Checkout
