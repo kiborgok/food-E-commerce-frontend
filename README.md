@@ -13,7 +13,7 @@
 + [Licence](#licence)
 
 ## Description
-#### Food ordering website that offers affordable homemade food.
+#### Food ordering website that offers affordable home made food.
 
 ## Setup Requirements
 * Configure a firebase app and use yours app settings in "firebaseConfig"
